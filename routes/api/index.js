@@ -1,7 +1,8 @@
 const router = require("express").Router();
-// const placeholder = require("./");
+
+const creditorRouter = require("./creditor");
 // const placeholder = require("./");
 
-// use routes here
+router.use("/creditor", creditorRouter);
 
 module.exports = router;

@@ -8,12 +8,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      const columnMapping = {
-        through: models.Creditor_Debtor,
-        foreignKey: "debtorId",
-      };
+      // const columnMapping = {
+      //   through: models.Creditor_Debtor,
+      //   // as: "Owing",
+      //   foreignKey: "debtorId",
+      //   otherKey: "creditorId",
+      // };
 
-      Debtor.belongsToMany(models.Creditor, columnMapping);
+      // Debtor.belongsToMany(models.Creditor, columnMapping);
+      Debtor.hasMany(models.Creditor_Debtor, { foreignKey: "debtorId" });
     }
   }
   Debtor.init(
