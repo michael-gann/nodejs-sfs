@@ -30,24 +30,23 @@ router.get(
           },
         ],
       })
-    ).reduce((map, c) => {
-      map[c.institution] = {
+    ).map((c) => {
+      return {
+        creditorName: c.institution,
         totalBalance: (
           c.Creditor_Debtors.reduce((acc, d) => {
             return (acc += d.balance);
           }, 0) / 100
         ).toFixed(2),
-        averageMinPay: (
+        averageMinPaymentPercentage: (
           c.Creditor_Debtors.reduce((acc, d) => {
             return (acc += d.minPaymentPercentage);
           }, 0) /
           c.Creditor_Debtors.length /
-          100
+          10
         ).toFixed(2),
       };
-
-      return map;
-    }, {});
+    });
 
     res.send(creditorInfo);
   })
@@ -74,7 +73,7 @@ router.get(
             },
             {
               minPaymentPercentage: {
-                [Op.lt]: 299.9,
+                [Op.lt]: 2.99 * 10,
               },
             },
           ],
@@ -96,7 +95,7 @@ router.get(
         creditorName: c.Creditor.institution,
         firstName: c.Debtor.firstName,
         lastName: c.Debtor.lastName,
-        minPaymentPercentage: (c.minPaymentPercentage / 100).toFixed(2),
+        minPaymentPercentage: (c.minPaymentPercentage / 10).toFixed(2),
         balance: (c.balance / 100).toFixed(2),
       };
     });
@@ -109,82 +108,140 @@ router.get(
   "/:institution",
   asyncHandler(async (req, res) => {
     const { institution } = req.params;
+    console.log(institution);
 
-    const creditor = await Creditor.findOne({
-      where: {
-        institution,
-      },
+    const dataByCreditor = (
+      await Creditor_Debtor.findAll({
+        attributes: [
+          "id",
+          "creditorId",
+          "debtorId",
+          "balance",
+          "minPaymentPercentage",
+        ],
+
+        include: [
+          {
+            model: Creditor,
+            attributes: ["id", "institution"],
+            where: {
+              institution,
+            },
+          },
+          {
+            model: Debtor,
+            attributes: ["firstName", "lastName"],
+          },
+        ],
+      })
+    ).map((c) => {
+      return {
+        id: c.id,
+        creditorName: c.Creditor.institution,
+        firstName: c.Debtor.firstName,
+        lastName: c.Debtor.lastName,
+        minPaymentPercentage: (c.minPaymentPercentage / 10).toFixed(2),
+        balance: (c.balance / 100).toFixed(2),
+      };
     });
 
-    res.send(creditor);
+    res.send(dataByCreditor);
   })
 );
 
-router.put(
+router.patch(
   "/",
   asyncHandler(async (req, res) => {
     const {
+      id,
       institution,
-      creditorId,
-      debtorId,
       firstName,
       lastName,
       balance,
       minPaymentPercentage,
-      creditorDebtorId,
     } = req.body;
 
-    const updateMessages = {
-      creditorDidUpdate: false,
-      debtorDidUpdate: false,
-      creditorDebtorDidUpdate: false,
-    };
+    let creditorDebtor;
+    let creditor;
+    let debtor;
 
-    if (creditorId) {
-      const newCreditor = await Creditor.update(
-        {
+    if (!id) {
+      return res.sendStatus(422).json({ error: "Invalid parameters" });
+    }
+
+    if ((!firstName && lastName) || (firstName && !lastName)) {
+      return res
+        .sendStatus(422)
+        .json({ error: "firstName AND lastName required" });
+    }
+
+    if (
+      !institution &&
+      !firstName &&
+      !lastName &&
+      !balance &&
+      !minPaymentPercentage
+    ) {
+      return res.sendStatus(200);
+    }
+
+    creditorDebtor = await Creditor_Debtor.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!creditorDebtor) {
+      return res
+        .status(500)
+        .json({ error: `Cannot update record. Invalid id: ${id}` });
+    }
+
+    if (institution) {
+      creditor = await Creditor.findOne({
+        where: {
           institution,
         },
-        {
-          where: { id: creditorId },
-        }
-      );
-      updateMessages["creditorDidUpdate"] = true;
+      });
     }
 
-    if (debtorId) {
-      const newDebtor = await Debtor.update(
-        {
-          firstName,
-          lastName,
+    if (!creditor) {
+      creditor = await Creditor.create({
+        institution: institution.toUpperCase(),
+      });
+    }
+
+    debtor = await Debtor.findOne({
+      where: {
+        firstName,
+        lastName,
+      },
+    });
+
+    if (!debtor) {
+      debtor = await Debtor.create({
+        firstName,
+        lastName,
+      });
+    }
+
+    await Creditor_Debtor.update(
+      {
+        creditorId: creditor ? creditor.id : creditorDebtor.creditorId,
+        debtorId: debtor ? debtor.id : creditorDebtor.debtorId,
+        balance: balance ? balance * 100 : creditorDebtor.balance,
+        minPaymentPercentage: minPaymentPercentage
+          ? minPaymentPercentage * 10
+          : creditorDebtor.minPaymentPercentage,
+      },
+      {
+        where: {
+          id,
         },
-        {
-          where: {
-            id: debtorId,
-          },
-        }
-      );
+      }
+    );
 
-      updateMessages["debtorDidUpdate"] = true;
-    }
-
-    if (creditorDebtorId) {
-      const newCreditor_Debtor = await Creditor_Debtor.update(
-        {
-          balance,
-          minPaymentPercentage,
-        },
-        {
-          where: {
-            id: creditorDebtorId,
-          },
-        }
-      );
-
-      updateMessages["creditorDebtorDidUpdate"] = true;
-    }
-
-    res.send(updateMessages);
+    res.sendStatus(200);
   })
 );
 
@@ -194,23 +251,50 @@ router.post(
     const { institution, firstName, lastName, balance, minPaymentPercentage } =
       req.body;
 
-    const newCreditor = await Creditor.create({
-      institution,
-    });
+    let debtor;
+    let creditor;
 
-    const newDebtor = await Debtor.create({
-      firstName,
-      lastName,
-    });
+    if (institution) {
+      creditor = await Creditor.findOne({
+        where: {
+          institution,
+        },
+      });
+    } else {
+      res.status(500).json({ error: "Invalid parameters" });
+    }
 
-    const newCreditor_Debtor = await Creditor_Debtor.create({
-      creditorId: newCreditor.id,
-      debtorId: newDebtor.id,
-      balance,
-      minPaymentPercentage,
-    });
+    if (!creditor) {
+      creditor = await Creditor.create({
+        institution: institution.toUpperCase(),
+      });
+    }
 
-    res.send(newCreditor_Debtor);
+    if (firstName && lastName) {
+      debtor = await Debtor.findOne({
+        where: {
+          firstName,
+          lastName,
+        },
+      });
+    } else {
+      res.status(500).json({ error: "Invalid parameters" });
+    }
+
+    if (!debtor) {
+      debtor = await Debtor.create({
+        firstName,
+        lastName,
+      });
+    }
+
+    await Creditor_Debtor.create({
+      creditorId: creditor.id,
+      debtorId: debtor.id,
+      balance: balance * 100,
+      minPaymentPercentage: minPaymentPercentage * 10,
+    });
+    res.sendStatus(200);
   })
 );
 
