@@ -135,7 +135,7 @@ You will need an [AWS](https://aws.amazon.com/) account. I use Amazon RDS to cre
 
 3. Now that our database is created (It will take a couple minutes) head over to the "serverless.example.yml" and change the name to "serverless.yml". In here we're going to need to insert the values needed for serverless to setup our lambda function. Go ahead and use the values you got from setting up your PostgreSQL production database and your development database locally.
 <br>
-(You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), click "Databases" on the left side menu and then click on the link for your unique database instance that you created for this API. On this page, your host is the 'endpoint' listed under the "Connectivity & Security tab)
+You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), click "Databases" on the left side menu and then click on the link for your unique database instance that you created for this API. On this page, your host is the 'endpoint' listed under the "Connectivity & Security tab
 
   ```yml
   custom:
