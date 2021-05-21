@@ -134,7 +134,6 @@ You will need an [AWS](https://aws.amazon.com/) account. I use Amazon RDS to cre
 2. At the top of the page, search for RDS, and from here find and click on the "Create Database" button. Here we're going to create a PostgreSQL database. I used most of the default settings here but feel free to change the settings to your liking. The important information we need here is the database password. Make sure you keep track of it. You'll also need to make sure you click on "Additional configuration" and specify an initial database name, otherwise your database will not be created. It also might be a good idea to allow connections from outside your VPC so you can connect to the database on your local machine.
 
 3. Now that our database is created (It will take a couple minutes) head over to the "serverless.example.yml" and change the name to "serverless.yml". In here we're going to need to insert the values needed for serverless to setup our lambda function. Go ahead and use the values you got from setting up your PostgreSQL production database and your development database locally.
-<br>
 You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), click "Databases" on the left side menu and then click on the link for your unique database instance that you created for this API. On this page, your host is the 'endpoint' listed under the "Connectivity & Security tab
 
   ```yml
