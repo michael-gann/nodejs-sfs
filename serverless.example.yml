@@ -1,0 +1,49 @@
+disabledDeprecations:
+  - '*' # To disable all deprecation messages
+frameworkVersion: '2'
+service: nodejs-sfs
+custom:
+  env:
+    production:
+      stage: production
+      db_dialect: "postgres"
+      db_url: <PRODUCTION DATABASE URL>
+    development:
+      stage: development
+      db_dialect: "postgres"
+      db_url: <LOCAL DATABASE URL>
+layers:
+  pg:
+    path: layer
+provider:
+  name: aws
+  runtime: nodejs14.x
+  vpc:
+    securityGroupIds:
+      - <sg-somehash>
+    subnetIds:
+      - <subnet-somehash>
+  region: <REGION>
+  stage: ${opt:stage, 'development'}
+  environment:
+    DB_DIALECT: ${self:custom.env.${self:provider.stage}.db_dialect}
+    DB_NAME: ${self:custom.env.${self:provider.stage}.db_name}
+    DB_USERNAME: ${self:custom.env.${self:provider.stage}.db_username}
+    DB_PASSWORD: ${self:custom.env.${self:provider.stage}.db_password}
+    DB_HOST: ${self:custom.env.${self:provider.stage}.db_host}
+    DB_PORT: ${self:custom.env.${self:provider.stage}.db_port}
+    DB_URL: ${self:custom.env.${self:provider.stage}.db_url}
+    NODE_ENV: ${self:custom.env.${self:provider.stage}.stage}
+    DB_PROTOCOL: ${self:custom.env.${self:provider.stage}.stage}
+  lambdaHashingVersion: 20201221
+functions:
+  app:
+    handler: app.index
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+    layers:
+      - {Ref: PgLambdaLayer}
+plugins:
+  - serverless-offline
+  - serverless-sequelize-migrations
