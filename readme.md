@@ -225,6 +225,13 @@ Once you have the API running on localhost, you will be able to start making req
 - [GET] "/api/creditor/\<creditorName>"
 - [GET] "/api/creditor/analysis"
 
+## Example Live Links
+
+- https://4fkdzxbou3.execute-api.us-east-2.amazonaws.com/production/api/creditor
+- https://4fkdzxbou3.execute-api.us-east-2.amazonaws.com/production/api/creditor/AMEX
+- https://4fkdzxbou3.execute-api.us-east-2.amazonaws.com/production/api/creditor/CBNA
+- https://4fkdzxbou3.execute-api.us-east-2.amazonaws.com/production/api/creditor/analysis
+
 ### GET /api/creditor
 
 
@@ -245,6 +252,8 @@ Once you have the API running on localhost, you will be able to start making req
   ]
   ```
 
+  <br>
+
 ### POST /api/creditor/
 
   This endpoint will allow you to create a new creditor data model. You must provide a first AND last name, an institution name, and a balance and minimum payment percentage in the body of the request like so
@@ -260,6 +269,8 @@ Once you have the API running on localhost, you will be able to start making req
     "minPaymentPercentage": 5.00
 }
   ```
+
+  <br>
 
 ### PATCH /api/creditor/
 
@@ -289,9 +300,11 @@ Once you have the API running on localhost, you will be able to start making req
 }
   ```
 
+  <br>
+
 ### GET /api/creditor/:institution
 
-  This endpoint will return all creditor model data realted to a specific institution
+  This endpoint will return all creditor model data related to a specific institution
 
 #### Response Payload
 
@@ -316,6 +329,8 @@ Once you have the API running on localhost, you will be able to start making req
   ]
 
   ```
+
+  <br>
 
 ### GET /api/creditor/analysis
 
@@ -343,6 +358,8 @@ Once you have the API running on localhost, you will be able to start making req
     }
 ]
   ```
+
+  <br>
 
 #
 

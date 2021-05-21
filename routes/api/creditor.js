@@ -7,7 +7,7 @@ const { findOrCreateDebtor, findOrCreateCreditor } = require("../utils");
 const asyncHandler = require("express-async-handler");
 const { parse } = require("dotenv");
 
-// Get all creditors
+// Get all creditors balance and average min payment percentage
 router.get(
   "/",
   asyncHandler(async (req, res) => {
