@@ -43,7 +43,7 @@
 
 <br>
 
-  <img src="https://i.imgur.com/i2OuCNm.png" alt="database schema" width="80%">
+  <img src="https://i.imgur.com/tSOOF8s.png" alt="database schema" width="80%">
 
 <br>
 <br>
@@ -149,7 +149,7 @@ You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), c
         db_url: <LOCAL DATABASE URL>
   ```
 
-4. Just next to where you grabbed your endpoint, we'll be grabbing the subnets and VPC's we setup for our database. Go ahead and copy those values into your serverless.yml file, in this section of the file. They should look something like the values in the example, either starting with 'sg' or 'subnet'.
+4. Just next to where you grabbed your endpoint, we'll be grabbing the subnets and VPC's we setup for our database. Go ahead and copy those values into your serverless.yml file, in this section of the file. They should look something like the values in the example, either starting with 'sg' or 'subnet'. Also, include your region, which is located in the top right of the page and put it in here.
 <br>
 
   ```yml
@@ -212,7 +212,7 @@ You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), c
 
 9. This will create a .serverless file in the root of your API and serverless will take care of forming our AWS API Gateway and AWS Lambda. It might take a couple minutes the first time we deploy since it has to build the postgres layer.
 
-10. Once the command is finished running it should say if it was successful or not. If it was successful, you should see this.
+10. Once the command is finished running it should say if it was successful or not. If it was successful, you should see this in your terminal.
 
   ```sh
   Serverless: Stack update finished...
@@ -238,7 +238,7 @@ You'll need to navigate to AWS [RDS](https://console.aws.amazon.com/rds/home), c
 
 # Usage
 
-Once you have the app running on localhost, you will be able to start making requests to the API on localhost. If you followed the steps above you can use the url for the serverless version of this API, but the examples will use localhost.
+Once you have the API running on localhost, you will be able to start making requests to the API on localhost. If you followed the steps above you can use the url for the serverless version of this API.
 
 ## Routes
 
@@ -265,7 +265,7 @@ Once you have the app running on localhost, you will be able to start making req
 
 ### POST /api/creditor/
 
-  This endpoint will allow you to create a new creditor data model. You must provide a first and last name, an institution name, and a balance and minimum payment percentage in the body of the request like so
+  This endpoint will allow you to create a new creditor data model. You must provide a first AND last name, an institution name, and a balance and minimum payment percentage in the body of the request like so
 
   ```js
   {
