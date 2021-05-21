@@ -10,30 +10,6 @@
 *** github_username, buttery, twitter_handle, email, project_title, project_description
 -->
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-<!-- [![Contributors][contributors-shield]][contributors-url] -->
-<!-- [![Forks][forks-shield]][forks-url] -->
-
-<!-- [![Stargazers][stars-shield]][stars-url] -->
-<!-- [![Issues][issues-shield]][issues-url] -->
-<!-- [![MIT License][license-shield]][license-url] -->
-<!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
-
-<!-- PROJECT LOGO -->
-
-<!-- <br /> -->
-<!-- <p align="center">
-  <!-- <a href="https://github.com/michael-gann/splitwise-clone"> -->
-<!--     <img src="" alt="Logo" width=200" height="200">
-  </a> -->
-
   <h3 align="center">Mock Financial API</h3>
 
   <p align="center">
@@ -41,14 +17,7 @@
     <br />
     &copy; Michael Gann
     <br />
-    <!-- <a href="https://github.com/michael-gann/buttery"><strong>Explore the docs »</strong></a> -->
     <br />
-    <br />
-    <!-- <a href="https://kadince-todo-app.herokuapp.com/">View Live Project</a> -->
-    <!-- · -->
-    <!-- <a href="https://github.com/michael-gann/buttery/issues">Report Bug</a> -->
-    <!-- · -->
-    <!-- <a href="https://github.com/michael-gann/buttery/issues">Request Feature</a> -->
   </p>
 </p>
 
@@ -56,7 +25,7 @@
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
   <ol>
-    <li> <a href="#about-the-project">About The Project</a></li>
+    <li> <a href="#about-the-project">About The API</a></li>
     <li><a href="#built-with">Built With</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
@@ -68,7 +37,7 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## About The API
 
 ### Database Schema
 
@@ -95,13 +64,6 @@ This API was built using express to setup a nodejs server and interacts with a p
 
   The creditor_debtor table represents a many to many relationship between creditors giving out loans to one or multiple debtors and debtors accepting loans from one or multiple creditors. The balance and minimum payment percentage of each 'loan' is represented here because each creditor needs a record of the balance and minimum payment percentage between each of their debtors.
 
-
-<!-- <p align="center">
-  <img src="https://i.postimg.cc/kgg0M2cy/Screen-Shot-2021-02-15-at-12-22-49-PM.png" alt="screenshot of app" width="80%">
-</p> -->
-
-<!-- ![Alt Text](https://media.giphy.com/media/ClZZPi3QXgXXoNRyyG/giphy.gif) -->
-
 <br>
 
 ## Built With
@@ -116,28 +78,19 @@ This API was built using express to setup a nodejs server and interacts with a p
 * [AWS API Gateway](https://us-east-2.console.aws.amazon.com/console/home)
 
 <br>
-<br>
 
 <!-- GETTING STARTED -->
 # Getting Started
 
-You will need npm installed on your machine to install dependencies for this project. You will also need [Node.js](https://nodejs.org/en/) and [postgreSQL](https://www.postgresql.org/) installed.
-
-<br>
+You will need npm installed on your machine to install dependencies for this API. You will also need [Node.js](https://nodejs.org/en/) and [postgreSQL](https://www.postgresql.org/) installed.
 
   ```sh
   npm install npm@latest -g
   ```
 
-<br>
-
 ### Installation
 
-<br>
-
-To get the project running locally, follow these steps
-
-<br>
+To get the API running locally, follow these steps
 
 1. Clone the repo onto your local machine
 
@@ -145,15 +98,11 @@ To get the project running locally, follow these steps
     git clone https://github.com/michael-gann/nodejs-sfs
   ```
 
-  <br>
-
 2. Install dependencies for the app
 
   ```sh
     npm install
   ```
-
-  <br>
 
 3. Create a local database using postgres and a user who owns it
 
@@ -162,23 +111,17 @@ To get the project running locally, follow these steps
     CREATE DATABASE <database> WITH OWNER <username>;
   ```
 
-  <br>
-
 4. create a .env file and populate it with the values that were created above
 
   ```js
     DB_URL="postgres://username:password@localhost/database"
   ```
 
-  <br>
-
 5. start the application
 
   ```sh
     npm start
   ```
-
-  <br>
 
 ## Serverless Setup
 
@@ -294,13 +237,6 @@ You will need an [AWS](https://aws.amazon.com/) account. I use Amazon RDS to cre
 
 11. Navigate to the first endpoint provided and append "/api/creditor/". If we get back some data, congratulations! Our app is now deployed as an AWS Lambda. We're now serverless. Read on below for detailed information about using this API.
 
-
-
-<!-- ### Prerequisites
-
- -->
-
-<!-- USAGE EXAMPLES -->
 # Usage
 
 Once you have the app running on localhost, you will be able to start making requests to the API on localhost. If you followed the steps above you can use the url for the serverless version of this API, but the examples will use localhost.
@@ -416,6 +352,8 @@ Once you have the app running on localhost, you will be able to start making req
     }
 ]
   ```
+
+#
 
 ### Michael Gann
 
