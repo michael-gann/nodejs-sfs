@@ -9,7 +9,7 @@
     "start": "per-env",
     "start:development": "nodemon -r dotenv/config ./bin/www",
     "start:production": "node ./bin/www"
-   },
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -24,11 +24,15 @@
     "per-env": "^1.0.2",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "serverless-http": "^2.7.0",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "dotenv-cli": "^4.0.0",
-    "morgan": "^1.10.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "serverless": "^2.43.0",
+    "serverless-offline": "^7.0.0",
+    "serverless-sequelize-migrations": "^1.1.1"
   }
 }
