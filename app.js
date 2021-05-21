@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const serverless = require("serverless-http");
 
 const routes = require("./routes");
 const { environment } = require("./config");
@@ -16,6 +17,18 @@ if (!isProduction) {
   // enable cors only in development
   app.use(cors());
 }
+
+app.get("/test", async function (req, res) {
+  let msg;
+  try {
+    msg = process.env.DB_HOST;
+  } catch (error) {
+    msg = "Unable to connect to the database:";
+    console.error("Unable to connect to the database:", error);
+  }
+
+  return res.send({ message: msg, thing1: "hi" });
+});
 
 app.use(routes); // Connect all the routes
 
@@ -40,4 +53,6 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-module.exports = app;
+module.exports.index = serverless(app);
+
+// module.exports = app;
