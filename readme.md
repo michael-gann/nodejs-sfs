@@ -43,7 +43,7 @@
 
 <br>
 
-  <img src="https://i.imgur.com/tSOOF8s.png" alt="database schema" width="80%">
+  <img src="https://i.imgur.com/tSOOF8s.png" alt="database schema" width="95%">
 
 <br>
 <br>
