@@ -55,9 +55,9 @@ This API was built using express to setup a Node.js server and interacts with a 
 
   The debtors table represents a debtor that accepts money from a creditor
 
-### creditor_debtor (join/through table)
+### creditor_debtors (join/through table)
 
-  The creditor_debtor table represents a super many to many relationship between creditors giving out loans to one or many debtors and debtors accepting loans from one or multiple creditors, with the option for there to be multiple debts with the same creditor and debtor. The balance and minimum payment percentage of each debt is represented here because each creditor needs a record of the balance and minimum payment percentage between each of their debtors.
+  The creditor_debtors table represents a super many to many relationship between creditors giving out loans to one or many debtors and debtors accepting loans from one or multiple creditors, with the option for there to be multiple debts with the same creditor and debtor. The balance and minimum payment percentage of each debt is represented here because each creditor needs a record of the balance and minimum payment percentage between each of their debtors.
 
 <!-- GETTING STARTED -->
 # Getting Started
@@ -173,14 +173,13 @@ Serverless uses AWS so you will need an [AWS](https://aws.amazon.com/) account. 
 8. Run the migrations on the AWS PostgreSQL database. Go ahead and run this command.
 
   ```sh
-  sls migrations up --path "./db/migrations" --stage production
+  npx sequelize-cli db:migrate --url 'postgresql://<PRODUCTION DATABASE_URL>'
   ```
 
-9. And since there's no plugin for running seed files, run this command.
+9. Apply the seed data using this command.
 
   ```sh
   npx sequelize-cli db:seed:all --url 'postgresql://<PRODUCTION DATABASE_URL>'
-
   ```
 
 8. Now we can deploy the code to AWS as a Lambda function. We'll do that with this command.
@@ -217,7 +216,7 @@ Serverless uses AWS so you will need an [AWS](https://aws.amazon.com/) account. 
 
 # Usage
 
-Once you have the API running on localhost, you will be able to start making requests to the API on localhost. If you followed the steps above you can use the url for the serverless version of this API.
+Once you have the API running on localhost, you will be able to start making requests to the API on localhost. If you followed the steps above you can use the url for the serverless version of this API that was created. Or you can follow the example live links below.
 
 ## Routes
 
