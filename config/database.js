@@ -8,20 +8,13 @@ const host = db.host;
 
 module.exports = {
   development: {
-    username,
-    password,
-    database,
-    host,
+    use_env_variable: "DB_URL",
     dialect: "postgres",
     protocol: "postgres",
     seederStorage: "sequelize",
   },
   production: {
     use_env_variable: "DB_URL",
-    username,
-    password,
-    database,
-    host,
     dialect: "postgres",
     seederStorage: "sequelize",
     dialectOptions: {

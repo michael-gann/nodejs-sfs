@@ -55,4 +55,4 @@ app.use((err, _req, res, _next) => {
 
 module.exports.index = serverless(app);
 
-// module.exports = app;
+module.exports.baseApp = app;

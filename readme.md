@@ -70,6 +70,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+### Database Schema
+
+<br>
+
+  <img src="https://i.imgur.com/i2OuCNm.png" alt="database schema" width="80%">
+
+<br>
+<br>
+
 <!-- <p align="center">
   <img src="https://i.postimg.cc/kgg0M2cy/Screen-Shot-2021-02-15-at-12-22-49-PM.png" alt="screenshot of app" width="80%">
 </p> -->
@@ -78,27 +87,85 @@
 
 ### Built With
 
+<br>
+
+* [Serverless](https://www.serverless.com/)
 * [Express](https://expressjs.com/)
 * [Sequelize](https://sequelize.org/)
+* [AWS Lambda](https://us-east-2.console.aws.amazon.com/console/home)
+* [AWS RDS](https://us-east-2.console.aws.amazon.com/console/home)
+* [AWS API Gateway](https://us-east-2.console.aws.amazon.com/console/home)
+
+<br>
+<br>
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-* npm
+You will need npm installed on your machine to install dependencies for this project. You will also need [node](https://nodejs.org/en/) installed.
+
+<br>
 
   ```sh
   npm install npm@latest -g
   ```
+  <br>
 
 ### Installation
+<br>
+
 
 To get the project running locally, follow these steps
 
+<br>
+
+
 1. Clone the repo onto your local machine
 
-   ```sh
-   git clone https://github.com/michael-gann/nodejs-sfs
-   ```
+    ```sh
+      git clone https://github.com/michael-gann/nodejs-sfs
+    ```
+
+    <br>
+
+2. Install dependencies for the app
+
+    ```sh
+      npm install
+    ```
+
+    <br>
+
+3. Create a local database using postgres and a user who owns it
+
+    ```sh
+      CREATE USER <userName> WITH PASSWORD <password>;
+      CREATE DATABASE <databaseName> WITH OWNER <userYouCreated>;
+    ```
+
+    <br>
+
+4. create a .env file and populate it with real values that were created above
+
+    ```js
+      DB_USERNAME=username
+      DB_PASSWORD=password
+      DB_DATABASE=name
+      DB_HOST=localhost
+
+    ```
+
+    <br>
+
+5. start the application
+
+    ```sh
+     npm start
+    ```
+
+    <br>
+
+6. (optional) If you want to setup this project to use AWS lambda functions, you'll need to setup an AWS account and create a database for the lambda function to persist changes to the data. The serverless framework does a lot of the heavy lifting with setting up the API Gateway and lambda functionality.
 
 <!-- ### Prerequisites
 
@@ -107,7 +174,7 @@ To get the project running locally, follow these steps
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-TODO
+Once you have the app running on localhost, you will be able to start making requests to the API.
 
 ### Michael Gann
 
