@@ -45,8 +45,6 @@
 
   <img src="https://i.imgur.com/tSOOF8s.png" alt="database schema" width="95%">
 
-<br>
-
 ## Overview
 
 This API was built using express to setup a nodejs server and interacts with a postgreSQL server using the ORM Sequelize to query and update the database. The app can support the current specifications of updating and creating a "creditor data model", but the way I've internally modeled the app allows the ability to extend the functionality to report information about debtors, or a "debtor data model".
@@ -69,12 +67,12 @@ This API was built using express to setup a nodejs server and interacts with a p
 
 <br>
 
-* [Serverless](https://www.serverless.com/)
 * [Express](https://expressjs.com/)
 * [Sequelize](https://sequelize.org/)
-* [AWS Lambda](https://us-east-2.console.aws.amazon.com/console/home)
+* [Serverless](https://www.serverless.com/)
 * [AWS RDS](https://us-east-2.console.aws.amazon.com/console/home)
 * [AWS API Gateway](https://us-east-2.console.aws.amazon.com/console/home)
+* [AWS Lambda](https://us-east-2.console.aws.amazon.com/console/home)
 
 <br>
 
