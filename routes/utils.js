@@ -31,8 +31,6 @@ const findOrCreateCreditor = async (institution) => {
     });
   }
 
-  console.log(creditor);
-
   if (!creditor) {
     creditor = await Creditor.create({
       institution: institution.toUpperCase(),

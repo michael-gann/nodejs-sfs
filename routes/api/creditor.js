@@ -58,12 +58,66 @@ router.get(
   })
 );
 
+// get credit analysis of creditors where balance > $2000 and pay percentage < 29.99%
+router.get(
+  "/analysis",
+  asyncHandler(async (req, res) => {
+    const creditAnalysis = (
+      await Creditor_Debtor.findAll({
+        attributes: [
+          "id",
+          "creditorId",
+          "debtorId",
+          "balance",
+          "minPaymentPercentage",
+        ],
+        where: {
+          [Op.and]: [
+            {
+              balance: {
+                [Op.gt]: 2000 * 100,
+              },
+            },
+            {
+              minPaymentPercentage: {
+                [Op.lt]: 3 * 100,
+              },
+            },
+          ],
+        },
+        include: [
+          {
+            model: Creditor,
+            attributes: ["id", "institution"],
+          },
+          {
+            model: Debtor,
+            attributes: ["firstName", "lastName"],
+          },
+        ],
+      })
+    ).map((c) => {
+      return {
+        id: c.id,
+        creditorName: c.Creditor.institution,
+        firstName: c.Debtor.firstName,
+        lastName: c.Debtor.lastName,
+        minPaymentPercentage: parseFloat(
+          (c.minPaymentPercentage / 100).toFixed(2)
+        ),
+        balance: parseFloat((c.balance / 100).toFixed(2)),
+      };
+    });
+
+    res.send(creditAnalysis);
+  })
+);
+
 // get creditor by institution
 router.get(
   "/:institution",
   asyncHandler(async (req, res) => {
     const { institution } = req.params;
-    console.log(institution);
 
     const dataByCreditor = (
       await Creditor_Debtor.findAll({
@@ -103,61 +157,6 @@ router.get(
     });
 
     res.send(dataByCreditor);
-  })
-);
-
-// get credit analysis of creditors where balance > $2000 and pay percentage < 29.99%
-router.get(
-  "/analysis",
-  asyncHandler(async (req, res) => {
-    const creditAnalysis = (
-      await Creditor_Debtor.findAll({
-        attributes: [
-          "id",
-          "creditorId",
-          "debtorId",
-          "balance",
-          "minPaymentPercentage",
-        ],
-        where: {
-          [Op.and]: [
-            {
-              balance: {
-                [Op.gt]: 2000 * 100,
-              },
-            },
-            {
-              minPaymentPercentage: {
-                [Op.lt]: 2.99 * 100,
-              },
-            },
-          ],
-        },
-        include: [
-          {
-            model: Creditor,
-            attributes: ["id", "institution"],
-          },
-          {
-            model: Debtor,
-            attributes: ["firstName", "lastName"],
-          },
-        ],
-      })
-    ).map((c) => {
-      return {
-        id: c.id,
-        creditorName: c.Creditor.institution,
-        firstName: c.Debtor.firstName,
-        lastName: c.Debtor.lastName,
-        minPaymentPercentage: parseFloat(
-          (c.minPaymentPercentage / 100).toFixed(2)
-        ),
-        balance: parseFloat((c.balance / 100).toFixed(2)),
-      };
-    });
-
-    res.send(creditAnalysis);
   })
 );
 
