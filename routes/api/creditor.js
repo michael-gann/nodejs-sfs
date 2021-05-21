@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { Op, Sequelize } = require("sequelize");
 
 const { Creditor, Creditor_Debtor, Debtor } = require("../../db/models");
+const { findOrCreateDebtor, findOrCreateCreditor } = require("../utils");
 
 const asyncHandler = require("express-async-handler");
 
@@ -43,7 +44,7 @@ router.get(
             return (acc += d.minPaymentPercentage);
           }, 0) /
           c.Creditor_Debtors.length /
-          10
+          100
         ).toFixed(2),
       };
     });
@@ -52,6 +53,7 @@ router.get(
   })
 );
 
+// get credit analysis of creditors where balance > $2000 and pay percentage < 29.99%
 router.get(
   "/analysis",
   asyncHandler(async (req, res) => {
@@ -68,12 +70,12 @@ router.get(
           [Op.and]: [
             {
               balance: {
-                [Op.gt]: 200000,
+                [Op.gt]: 2000 * 100,
               },
             },
             {
               minPaymentPercentage: {
-                [Op.lt]: 2.99 * 10,
+                [Op.lt]: 2.99 * 100,
               },
             },
           ],
@@ -95,7 +97,7 @@ router.get(
         creditorName: c.Creditor.institution,
         firstName: c.Debtor.firstName,
         lastName: c.Debtor.lastName,
-        minPaymentPercentage: (c.minPaymentPercentage / 10).toFixed(2),
+        minPaymentPercentage: (c.minPaymentPercentage / 100).toFixed(2),
         balance: (c.balance / 100).toFixed(2),
       };
     });
@@ -104,6 +106,7 @@ router.get(
   })
 );
 
+// get creditor by institution
 router.get(
   "/:institution",
   asyncHandler(async (req, res) => {
@@ -140,7 +143,7 @@ router.get(
         creditorName: c.Creditor.institution,
         firstName: c.Debtor.firstName,
         lastName: c.Debtor.lastName,
-        minPaymentPercentage: (c.minPaymentPercentage / 10).toFixed(2),
+        minPaymentPercentage: (c.minPaymentPercentage / 100).toFixed(2),
         balance: (c.balance / 100).toFixed(2),
       };
     });
@@ -149,6 +152,7 @@ router.get(
   })
 );
 
+// update an existing creditor data model
 router.patch(
   "/",
   asyncHandler(async (req, res) => {
@@ -166,13 +170,21 @@ router.patch(
     let debtor;
 
     if (!id) {
-      return res.sendStatus(422).json({ error: "Invalid parameters" });
+      return res.status(422).json({ error: "Invalid parameters" });
+    }
+
+    if (typeof id !== "number") {
+      return res.status(422).json({ error: "id must be of type number" });
     }
 
     if ((!firstName && lastName) || (firstName && !lastName)) {
+      return res.status(422).json({ error: "firstName AND lastName required" });
+    }
+
+    if (typeof firstName !== "string" || typeof lastName !== "string") {
       return res
-        .sendStatus(422)
-        .json({ error: "firstName AND lastName required" });
+        .status(422)
+        .json({ error: "firstName and lastName must be of type string" });
     }
 
     if (
@@ -183,6 +195,30 @@ router.patch(
       !minPaymentPercentage
     ) {
       return res.sendStatus(200);
+    }
+
+    if (institution) {
+      if (typeof institution !== "string") {
+        return res
+          .status(422)
+          .json({ error: "institution name must be of type string" });
+      }
+    }
+
+    if (balance) {
+      if (typeof balance !== "number") {
+        return res
+          .status(422)
+          .json({ error: "balance must be of type number" });
+      }
+    }
+
+    if (minPaymentPercentage) {
+      if (typeof minPaymentPercentage !== "number") {
+        return res
+          .status(422)
+          .json({ error: "minPaymentPercentage must be of type number" });
+      }
     }
 
     creditorDebtor = await Creditor_Debtor.findOne({
@@ -197,42 +233,21 @@ router.patch(
         .json({ error: `Cannot update record. Invalid id: ${id}` });
     }
 
+    debtor = await findOrCreateDebtor(firstName, lastName);
+
     if (institution) {
-      creditor = await Creditor.findOne({
-        where: {
-          institution,
-        },
-      });
-    }
-
-    if (!creditor) {
-      creditor = await Creditor.create({
-        institution: institution.toUpperCase(),
-      });
-    }
-
-    debtor = await Debtor.findOne({
-      where: {
-        firstName,
-        lastName,
-      },
-    });
-
-    if (!debtor) {
-      debtor = await Debtor.create({
-        firstName,
-        lastName,
-      });
+      creditor = await findOrCreateCreditor(institution);
     }
 
     await Creditor_Debtor.update(
       {
         creditorId: creditor ? creditor.id : creditorDebtor.creditorId,
         debtorId: debtor ? debtor.id : creditorDebtor.debtorId,
-        balance: balance ? balance * 100 : creditorDebtor.balance,
-        minPaymentPercentage: minPaymentPercentage
-          ? minPaymentPercentage * 10
-          : creditorDebtor.minPaymentPercentage,
+        balance: balance != null ? balance * 100 : creditorDebtor.balance,
+        minPaymentPercentage:
+          minPaymentPercentage != null
+            ? minPaymentPercentage * 100
+            : creditorDebtor.minPaymentPercentage,
       },
       {
         where: {
@@ -245,6 +260,7 @@ router.patch(
   })
 );
 
+// create a new creditor data model
 router.post(
   "/",
   asyncHandler(async (req, res) => {
@@ -254,45 +270,47 @@ router.post(
     let debtor;
     let creditor;
 
-    if (institution) {
-      creditor = await Creditor.findOne({
-        where: {
-          institution,
-        },
-      });
-    } else {
-      res.status(500).json({ error: "Invalid parameters" });
+    if (
+      !institution ||
+      !firstName ||
+      !lastName ||
+      balance == null ||
+      minPaymentPercentage == null
+    ) {
+      return res.status(422).json({ error: "Invalid parameters" });
     }
 
-    if (!creditor) {
-      creditor = await Creditor.create({
-        institution: institution.toUpperCase(),
-      });
+    if (typeof firstName !== "string" || typeof lastName !== "string") {
+      return res
+        .status(422)
+        .json({ error: "firstName and lastName must be of type string" });
     }
 
-    if (firstName && lastName) {
-      debtor = await Debtor.findOne({
-        where: {
-          firstName,
-          lastName,
-        },
-      });
-    } else {
-      res.status(500).json({ error: "Invalid parameters" });
+    if (typeof institution !== "string") {
+      return res
+        .status(422)
+        .json({ error: "institution name must be of type string" });
     }
 
-    if (!debtor) {
-      debtor = await Debtor.create({
-        firstName,
-        lastName,
-      });
+    if (typeof balance !== "number") {
+      return res.status(422).json({ error: "balance must be of type number" });
     }
+
+    if (typeof minPaymentPercentage !== "number") {
+      return res
+        .status(422)
+        .json({ error: "minPaymentPercentage must be of type number" });
+    }
+
+    creditor = await findOrCreateCreditor(institution);
+
+    debtor = await findOrCreateDebtor(firstName, lastName);
 
     await Creditor_Debtor.create({
       creditorId: creditor.id,
       debtorId: debtor.id,
       balance: balance * 100,
-      minPaymentPercentage: minPaymentPercentage * 10,
+      minPaymentPercentage: minPaymentPercentage * 100,
     });
     res.sendStatus(200);
   })
