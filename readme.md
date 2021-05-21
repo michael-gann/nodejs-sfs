@@ -46,7 +46,6 @@
   <img src="https://i.imgur.com/tSOOF8s.png" alt="database schema" width="95%">
 
 <br>
-<br>
 
 ## Overview
 
