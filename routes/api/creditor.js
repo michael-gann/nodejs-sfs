@@ -5,6 +5,7 @@ const { Creditor, Creditor_Debtor, Debtor } = require("../../db/models");
 const { findOrCreateDebtor, findOrCreateCreditor } = require("../utils");
 
 const asyncHandler = require("express-async-handler");
+const { parse } = require("dotenv");
 
 // Get all creditors
 router.get(
@@ -34,22 +35,74 @@ router.get(
     ).map((c) => {
       return {
         creditorName: c.institution,
-        totalBalance: (
-          c.Creditor_Debtors.reduce((acc, d) => {
-            return (acc += d.balance);
-          }, 0) / 100
-        ).toFixed(2),
-        averageMinPaymentPercentage: (
-          c.Creditor_Debtors.reduce((acc, d) => {
-            return (acc += d.minPaymentPercentage);
-          }, 0) /
-          c.Creditor_Debtors.length /
-          100
-        ).toFixed(2),
+        totalBalance: parseFloat(
+          (
+            c.Creditor_Debtors.reduce((acc, d) => {
+              return (acc += d.balance);
+            }, 0) / 100
+          ).toFixed(2)
+        ),
+        averageMinPaymentPercentage: parseFloat(
+          (
+            c.Creditor_Debtors.reduce((acc, d) => {
+              return (acc += d.minPaymentPercentage);
+            }, 0) /
+            c.Creditor_Debtors.length /
+            100
+          ).toFixed(2)
+        ),
       };
     });
 
     res.send(creditorInfo);
+  })
+);
+
+// get creditor by institution
+router.get(
+  "/:institution",
+  asyncHandler(async (req, res) => {
+    const { institution } = req.params;
+    console.log(institution);
+
+    const dataByCreditor = (
+      await Creditor_Debtor.findAll({
+        attributes: [
+          "id",
+          "creditorId",
+          "debtorId",
+          "balance",
+          "minPaymentPercentage",
+        ],
+
+        include: [
+          {
+            model: Creditor,
+            attributes: ["id", "institution"],
+            where: {
+              institution,
+            },
+          },
+          {
+            model: Debtor,
+            attributes: ["firstName", "lastName"],
+          },
+        ],
+      })
+    ).map((c) => {
+      return {
+        id: c.id,
+        creditorName: c.Creditor.institution,
+        firstName: c.Debtor.firstName,
+        lastName: c.Debtor.lastName,
+        minPaymentPercentage: parseFloat(
+          (c.minPaymentPercentage / 100).toFixed(2)
+        ),
+        balance: parseFloat((c.balance / 100).toFixed(2)),
+      };
+    });
+
+    res.send(dataByCreditor);
   })
 );
 
@@ -97,58 +150,14 @@ router.get(
         creditorName: c.Creditor.institution,
         firstName: c.Debtor.firstName,
         lastName: c.Debtor.lastName,
-        minPaymentPercentage: (c.minPaymentPercentage / 100).toFixed(2),
-        balance: (c.balance / 100).toFixed(2),
+        minPaymentPercentage: parseFloat(
+          (c.minPaymentPercentage / 100).toFixed(2)
+        ),
+        balance: parseFloat((c.balance / 100).toFixed(2)),
       };
     });
 
     res.send(creditAnalysis);
-  })
-);
-
-// get creditor by institution
-router.get(
-  "/:institution",
-  asyncHandler(async (req, res) => {
-    const { institution } = req.params;
-    console.log(institution);
-
-    const dataByCreditor = (
-      await Creditor_Debtor.findAll({
-        attributes: [
-          "id",
-          "creditorId",
-          "debtorId",
-          "balance",
-          "minPaymentPercentage",
-        ],
-
-        include: [
-          {
-            model: Creditor,
-            attributes: ["id", "institution"],
-            where: {
-              institution,
-            },
-          },
-          {
-            model: Debtor,
-            attributes: ["firstName", "lastName"],
-          },
-        ],
-      })
-    ).map((c) => {
-      return {
-        id: c.id,
-        creditorName: c.Creditor.institution,
-        firstName: c.Debtor.firstName,
-        lastName: c.Debtor.lastName,
-        minPaymentPercentage: (c.minPaymentPercentage / 100).toFixed(2),
-        balance: (c.balance / 100).toFixed(2),
-      };
-    });
-
-    res.send(dataByCreditor);
   })
 );
 
