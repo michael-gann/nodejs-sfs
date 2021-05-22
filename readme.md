@@ -14,10 +14,9 @@
 
   <p align="center">
     Node.js API built for Strategic Financial Solutions
-    <br />
+    <br>
     &copy; Michael Gann
-    <br />
-    <br />
+    <br>
   </p>
 </p>
 
@@ -46,6 +45,10 @@
 ## Overview
 
 This API was built using express to setup a Node.js server and interacts with a PostgreSQL server using the ORM Sequelize to query and update the database. The app can support the current specifications of updating and creating a "creditor data model", but the way I've internally modeled the app allows the ability to extend the functionality to report information about debtors, or a "debtor data model".
+
+## Video Explanation
+
+  Here is a <a href="https://youtu.be/whXjlwJwfZs"> link</a> to the video
 
 ### creditors table
 
